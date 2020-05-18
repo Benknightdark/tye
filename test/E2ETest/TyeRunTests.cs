@@ -489,8 +489,8 @@ namespace E2ETest
             await RunHostingApplication(application, new HostOptions(), async (app, uri) =>
             {
                 var ingressUri = await GetServiceUrl(client, uri, "ingress");
-                var appAUri = await GetServiceUrl(client, uri, "app-a");
-                var appBUri = await GetServiceUrl(client, uri, "app-b");
+                var appAUri = await GetServiceUrl(client, uri, "appa");
+                var appBUri = await GetServiceUrl(client, uri, "appb");
 
                 var appAResponse = await client.GetAsync(appAUri);
                 var appBResponse = await client.GetAsync(appBUri);
@@ -538,8 +538,8 @@ namespace E2ETest
             await RunHostingApplication(application, new HostOptions(), async (app, uri) =>
             {
                 var nginxUri = await GetServiceUrl(client, uri, "nginx");
-                var appAUri = await GetServiceUrl(client, uri, "appA");
-                var appBUri = await GetServiceUrl(client, uri, "appB");
+                var appAUri = await GetServiceUrl(client, uri, "appa");
+                var appBUri = await GetServiceUrl(client, uri, "appb");
 
                 var nginxResponse = await client.GetAsync(nginxUri);
                 var appAResponse = await client.GetAsync(appAUri);
@@ -701,6 +701,12 @@ services:
   bindings:
     - containerPort: 80
       protocol: http
+- name: backend2
+  dockerFile: ./Dockerfile
+  dockerFileContext: ./backend
+  bindings:
+    - containerPort: 80
+      protocol: http
 - name: frontend
   project: frontend/frontend.csproj";
 
@@ -721,11 +727,14 @@ services:
             {
                 var frontendUri = await GetServiceUrl(client, uri, "frontend");
                 var backendUri = await GetServiceUrl(client, uri, "backend");
+                var backend2Uri = await GetServiceUrl(client, uri, "backend2");
 
                 var backendResponse = await client.GetAsync(backendUri);
+                var backend2Response = await client.GetAsync(backend2Uri);
                 var frontendResponse = await client.GetAsync(frontendUri);
 
                 Assert.True(backendResponse.IsSuccessStatusCode);
+                Assert.True(backend2Response.IsSuccessStatusCode);
                 Assert.True(frontendResponse.IsSuccessStatusCode);
             });
         }
